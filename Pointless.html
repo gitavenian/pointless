@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pointless Team Game</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="game-shell" id="gameShell">
+    <div class="feedback-overlay" id="feedbackOverlay" aria-live="assertive"></div>
+
+    <section class="playfield">
+      <aside class="tower-panel">
+        <div class="score-badge" id="scoreDisplay">100</div>
+        <div class="tower-wrap" id="tower">
+          <div class="scale-labels">
+            <span>100</span><span>75</span><span>50</span><span>25</span><span>0</span>
+          </div>
+          <div class="tube">
+            <div class="tube-fill" id="tubeFill"></div>
+            <div class="marker" id="marker"></div>
+          </div>
+        </div>
+      </aside>
+
+      <div class="right-stage">
+        <section class="show-board">
+          <div class="board-top-pill">POINTLESS</div>
+          <div class="ring"></div>
+
+          <div class="question-window">
+            <div class="question-content" id="questionContent">
+              <div class="question-kicker" id="questionKicker">WE ASKED 100 PEOPLE</div>
+              <h1 id="questionText">LOADING QUESTION...</h1>
+            </div>
+
+            <div class="round-results" id="roundResults" hidden>
+              <h2>ANSWERS REVEALED</h2>
+              <div class="result-columns">
+                <section>
+                  <h3>HIGHEST ANSWERS</h3>
+                  <ol id="highestAnswers"></ol>
+                </section>
+                <section>
+                  <h3 id="lowestHeading">LOWEST ANSWERS</h3>
+                  <ol id="lowestAnswers"></ol>
+                </section>
+              </div>
+            </div>
+          </div>
+
+          <button class="next-question-btn" id="nextQuestionBtn" hidden>Next Question</button>
+        </section>
+
+        <section class="answer-deck" id="cardsRow" aria-label="Team answers"></section>
+      </div>
+    </section>
+
+    <section class="host-panel">
+      <div class="turn-label" id="turnLabel">TEAM 1</div>
+      <input id="answerInput" type="text" autocomplete="off" placeholder="Type Team 1's answer" />
+      <button id="showBtn">Show Answer</button>
+      <button id="resetBtn">Reset Round</button>
+      <button id="soundBtn">Sound: On</button>
+    </section>
+  </main>
+
+  <script src="questions.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
