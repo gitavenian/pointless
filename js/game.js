@@ -243,36 +243,7 @@ function revealAnswer(rawAnswer, card, teamIndex) {
   if (match) {
     applyResult(rawAnswer, card, teamIndex, Number(match.score), true);
   } else {
-    // Not on the board — let the host accept it (with a score) or reject it.
-    openAdjudication(rawAnswer, card, teamIndex);
-  }
-}
-
-function openAdjudication(rawAnswer, card, teamIndex) {
-  pendingAdjudication = { rawAnswer, card, teamIndex };
-  adjudicationAnswer.textContent = rawAnswer;
-  adjudicationScore.value = "0";
-  adjudication.hidden = false;
-  playTone(300, 0.12, "triangle", 0.05);
-  window.setTimeout(() => adjudicationScore.focus(), 30);
-}
-
-function closeAdjudication() {
-  if (adjudication) adjudication.hidden = true;
-}
-
-function resolveAdjudication(accept) {
-  if (!pendingAdjudication) return;
-  const { rawAnswer, card, teamIndex } = pendingAdjudication;
-  pendingAdjudication = null;
-  closeAdjudication();
-
-  if (accept) {
-    let score = Math.round(Number(adjudicationScore.value));
-    if (!Number.isFinite(score)) score = 0;
-    score = Math.max(0, Math.min(100, score));
-    applyResult(rawAnswer, card, teamIndex, score, true);
-  } else {
+    // Not on the board — the hosts pre-approve answers, so an unlisted answer is wrong (100).
     applyResult(rawAnswer, card, teamIndex, 100, false);
   }
 }
@@ -545,13 +516,11 @@ function restoreState(state) {
   teamResults = Array.isArray(state.teamResults) ? state.teamResults : [];
   questionPlacements = Array.isArray(state.questionPlacements) ? state.questionPlacements : [];
   usedAnswers = new Set(Array.isArray(state.usedAnswers) ? state.usedAnswers : []);
-  pendingAdjudication = null;
   busy = false;
   turnOrder = buildTurnOrder(getStartingTeam(currentQuestion()));
 
   createTeamCards();
   clearBoardEffects();
-  closeAdjudication();
   questionContent.hidden = false;
   roundResults.hidden = true;
   nextQuestionBtn.hidden = true;

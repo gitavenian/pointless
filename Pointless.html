@@ -11,7 +11,6 @@
   <link rel="stylesheet" href="css/cards.css" />
   <link rel="stylesheet" href="css/host.css" />
   <link rel="stylesheet" href="css/effects.css" />
-  <link rel="stylesheet" href="css/adjudication.css" />
 </head>
 <body>
   <main class="game-shell" id="gameShell">
@@ -71,21 +70,6 @@
       <button id="resetBtn">Reset Round</button>
       <button id="soundBtn">Sound: On</button>
     </section>
-
-    <div class="adjudication" id="adjudication" hidden>
-      <div class="adjudication-card">
-        <div class="adjudication-q">NOT ON THE BOARD</div>
-        <div class="adjudication-answer" id="adjudicationAnswer">ANSWER</div>
-        <p class="adjudication-hint">Accept it as a valid answer (with a score) or reject it (100).</p>
-        <div class="adjudication-row">
-          <label for="adjudicationScore">Score
-            <input type="number" id="adjudicationScore" min="0" max="100" step="1" value="0" />
-          </label>
-          <button id="acceptBtn" type="button">Accept</button>
-          <button id="rejectBtn" type="button">Reject (100)</button>
-        </div>
-      </div>
-    </div>
   </main>
 
   <script src="js/config.js"></script>
