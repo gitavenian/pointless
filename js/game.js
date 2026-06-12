@@ -1,5 +1,5 @@
-const TEAM_COUNT = 4;
-const REVEAL_DELAY = 1000;
+// Core game flow: turns, scoring, board updates, and the round results.
+// Depends on config.js (constants), audio.js (sound), and questions.js (data).
 
 const questions = Array.isArray(window.GAME_QUESTIONS)
   ? window.GAME_QUESTIONS
@@ -11,8 +11,6 @@ let teamResults = [];
 let teamTotals = Array(TEAM_COUNT).fill(0);
 let questionStartTotals = [...teamTotals];
 let busy = false;
-let soundEnabled = true;
-let audioCtx = null;
 let revealTimer = null;
 
 const gameShell = document.getElementById("gameShell");
@@ -37,7 +35,7 @@ const feedbackOverlay = document.getElementById("feedbackOverlay");
 const nextQuestionBtn = document.getElementById("nextQuestionBtn");
 
 showBtn.addEventListener("click", submitAnswer);
-document.getElementById("resetBtn").addEventListener("click", resetRound);
+resetBtn.addEventListener("click", resetRound);
 nextQuestionBtn.addEventListener("click", nextQuestion);
 soundBtn.addEventListener("click", toggleSound);
 answerInput.addEventListener("keydown", event => {
@@ -121,6 +119,10 @@ function currentTeamIndex() {
 
 function currentPass() {
   return Math.floor(turnIndex / TEAM_COUNT) + 1;
+}
+
+function isLastQuestion() {
+  return questionIndex === questions.length - 1;
 }
 
 function prepareTeamTurn() {
@@ -279,6 +281,7 @@ function showRoundResults() {
   questionContent.hidden = true;
   roundResults.hidden = false;
   nextQuestionBtn.hidden = false;
+  nextQuestionBtn.textContent = isLastQuestion() ? "See Final Podium" : "Next Question";
 
   const sortedHigh = [...currentQuestion().answers]
     .sort((a, b) => Number(b.score) - Number(a.score))
@@ -307,8 +310,28 @@ function renderAnswerList(list, answers) {
 }
 
 function nextQuestion() {
-  const nextIndex = (questionIndex + 1) % questions.length;
-  startQuestion(nextIndex, true);
+  if (isLastQuestion()) {
+    finishGame();
+    return;
+  }
+  startQuestion(questionIndex + 1, true);
+}
+
+// Save the final totals and hand off to the winner podium page.
+function finishGame() {
+  const teams = teamTotals.map((total, index) => ({
+    name: `TEAM ${index + 1}`,
+    score: total
+  }));
+  try {
+    localStorage.setItem(FINAL_SCORES_KEY, JSON.stringify(teams));
+  } catch (error) {
+    // localStorage may be blocked (e.g. file:// in some browsers); fall back to a query string.
+    const encoded = encodeURIComponent(JSON.stringify(teams));
+    window.location.href = `podium.html?scores=${encoded}`;
+    return;
+  }
+  window.location.href = "podium.html";
 }
 
 function resetRound() {
@@ -338,32 +361,6 @@ function setTowerPosition(score) {
 function toggleSound() {
   soundEnabled = !soundEnabled;
   soundBtn.textContent = soundEnabled ? "Sound: On" : "Sound: Off";
-}
-
-function ensureAudio() {
-  if (!soundEnabled) return null;
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  return audioCtx;
-}
-
-function playTone(freq, duration, type = "sine", gainValue = 0.035) {
-  const ctx = ensureAudio();
-  if (!ctx) return;
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = type;
-  osc.frequency.value = freq;
-  gain.gain.value = gainValue;
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start();
-  gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
-  osc.stop(ctx.currentTime + duration);
-}
-
-function tickSound(current, target) {
-  if (current % 4 !== 0 && current - target > 5) return;
-  playTone(240 + current * 3, 0.025, "square", 0.018);
 }
 
 if (questions.length > 0) {

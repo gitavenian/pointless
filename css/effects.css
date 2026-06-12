@@ -1,0 +1,112 @@
+/* Full-screen feedback overlays, flashes, keyframes, and responsive rules. */
+.feedback-overlay {
+  position: absolute;
+  z-index: 20;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+  transform: scale(0.7);
+  font-size: clamp(5rem, 22vw, 20rem);
+  font-weight: 900;
+  line-height: 0.8;
+  text-align: center;
+  pointer-events: none;
+}
+
+.feedback-overlay.visible {
+  animation: overlayPop 1.25s ease both;
+}
+
+.feedback-overlay.incorrect {
+  color: #fff;
+  background: radial-gradient(circle, rgba(255, 32, 67, 0.7), rgba(95, 0, 20, 0.12) 65%, transparent 78%);
+  text-shadow: 0 0 20px var(--red), 0 0 70px var(--red), 0 8px 0 #850018;
+}
+
+.feedback-overlay.pointless {
+  color: #fff;
+  background: radial-gradient(circle, rgba(19, 255, 126, 0.55), rgba(0, 78, 36, 0.12) 66%, transparent 80%);
+  font-size: clamp(2.8rem, 10vw, 9rem);
+  text-shadow: 0 0 20px var(--green), 0 0 70px var(--green), 0 7px 0 #006c32;
+}
+
+.incorrect-flash {
+  animation: redScreen 0.22s ease-in-out 5 alternate;
+}
+
+.pointless-flash {
+  animation: greenScreen 0.42s ease-in-out 3 alternate;
+}
+
+@keyframes lockedPulse {
+  from { box-shadow: 0 0 10px rgba(255, 242, 60, 0.35); }
+  to { box-shadow: 0 0 28px rgba(255, 242, 60, 0.9); }
+}
+
+@keyframes overlayPop {
+  0% { opacity: 0; transform: scale(0.55); }
+  18%, 72% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.08); }
+}
+
+@keyframes redScreen {
+  from { box-shadow: inset 0 0 0 rgba(255, 0, 45, 0); }
+  to { box-shadow: inset 0 0 110px rgba(255, 0, 45, 0.9); }
+}
+
+@keyframes greenScreen {
+  from { box-shadow: inset 0 0 0 rgba(0, 255, 123, 0); }
+  to { box-shadow: inset 0 0 100px rgba(0, 255, 123, 0.7); }
+}
+
+@media (max-width: 900px) {
+  .game-shell {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+
+  .question-window {
+    width: 90%;
+  }
+}
+
+@media (max-aspect-ratio: 4 / 3) {
+  body {
+    overflow: auto;
+  }
+
+  .game-shell {
+    width: 100vw;
+    height: auto;
+    min-height: 100vh;
+    border-radius: 0;
+    grid-template-rows: minmax(620px, 88vh) auto;
+  }
+
+  .playfield {
+    grid-template-columns: 22% 1fr;
+  }
+
+  .right-stage {
+    grid-template-rows: minmax(410px, 1fr) auto;
+  }
+
+  .answer-deck {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .answer-card {
+    min-height: 110px;
+  }
+
+  .host-panel {
+    min-height: 115px;
+    grid-template-columns: 0.6fr 2fr 1fr 1fr;
+  }
+
+  .host-panel #soundBtn {
+    grid-column: 2 / 5;
+  }
+}

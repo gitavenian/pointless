@@ -1,0 +1,105 @@
+/* The team answer cards along the bottom of the playfield. */
+.answer-deck {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.2%;
+}
+
+.answer-card {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  padding: 2% 3%;
+  overflow: hidden;
+  border-radius: 14px;
+  opacity: 0.55;
+  background: linear-gradient(180deg, #34358f 0%, #72439c 56%, #e794c5 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  text-align: center;
+  transition: opacity 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.answer-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.16), transparent 45%, rgba(0, 0, 0, 0.12));
+  pointer-events: none;
+}
+
+.answer-card.active {
+  z-index: 2;
+  opacity: 1;
+  transform: translateY(-2%);
+  border-color: var(--yellow);
+  background: linear-gradient(180deg, #1a2472 0%, #352979 55%, #816099 100%);
+  box-shadow: 0 0 24px rgba(255, 242, 60, 0.55), inset 0 0 22px rgba(255, 255, 255, 0.16);
+}
+
+.answer-card.answered,
+.answer-card.incorrect {
+  opacity: 1;
+}
+
+.answer-card.locked {
+  animation: lockedPulse 0.65s ease-in-out infinite alternate;
+}
+
+.answer-slot {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: clamp(0.52rem, 0.7vw, 0.7rem);
+  letter-spacing: 0.08em;
+}
+
+.answer-name {
+  width: 100%;
+  margin-block: 0.12em;
+  overflow: hidden;
+  font-size: clamp(0.68rem, 1.05vw, 1.05rem);
+  line-height: 1.05;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-shadow: 0 3px 0 #000;
+}
+
+.answer-score {
+  min-width: 38%;
+  margin-top: 0.04em;
+  padding: 0.02em 0.42em;
+  border: 2px solid rgba(255, 255, 255, 0.78);
+  border-radius: 999px;
+  background: #27186e;
+  font-size: clamp(0.95rem, 1.65vw, 1.7rem);
+  line-height: 1.04;
+  text-shadow: 0 3px 0 #000;
+}
+
+.answer-result-icon {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: clamp(2rem, 5vw, 5rem);
+  line-height: 1;
+  text-shadow: 0 4px 0 rgba(0, 0, 0, 0.55), 0 0 22px currentColor;
+  pointer-events: none;
+}
+
+.incorrect .answer-result-icon {
+  color: #ffd7dd;
+  background: rgba(165, 0, 28, 0.63);
+}
+
+.pointless .answer-result-icon {
+  padding-top: 0.1em;
+  color: #d9ffe9;
+  background: rgba(0, 105, 51, 0.68);
+  font-size: clamp(0.75rem, 1.65vw, 1.6rem);
+  letter-spacing: 0.02em;
+}

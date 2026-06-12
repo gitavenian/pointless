@@ -1,0 +1,107 @@
+/* The left score tower: badge, tube, fill, and sliding marker. */
+.tower-panel {
+  position: relative;
+  min-height: 0;
+  padding: 5% 8%;
+  overflow: hidden;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #ff61a5 0%, #cd3aa2 44%, #543091 100%);
+  display: grid;
+  grid-template-rows: 15% 1fr;
+  gap: 3%;
+}
+
+.tower-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.18), transparent 28% 70%, rgba(0, 0, 0, 0.18));
+  pointer-events: none;
+}
+
+.score-badge {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--yellow);
+  border-radius: 999px;
+  background: var(--navy);
+  color: var(--yellow);
+  font-size: clamp(1.6rem, 3.1vw, 3.25rem);
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 3px 0 #000;
+  box-shadow: 0 0 16px rgba(255, 242, 60, 0.45);
+}
+
+.tower-wrap {
+  position: relative;
+  z-index: 2;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 34% 1fr;
+  gap: 7%;
+}
+
+.scale-labels {
+  padding-block: 4%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  color: #fff;
+  font-size: clamp(0.62rem, 0.9vw, 1rem);
+  font-weight: 900;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.25);
+}
+
+.tube {
+  position: relative;
+  overflow: hidden;
+  border: 4px solid #11153c;
+  border-radius: 22px;
+  background: repeating-linear-gradient(180deg, #7d7d78 0 5px, #252525 6px 12px);
+  box-shadow: inset 0 0 18px #000, 0 0 12px rgba(255, 255, 255, 0.25);
+}
+
+.tube::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.28), transparent 32%, rgba(0, 0, 0, 0.35));
+  pointer-events: none;
+}
+
+.tube-fill {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 0;
+  background: linear-gradient(180deg, rgba(40, 98, 255, 0.62), rgba(13, 21, 75, 0.88));
+  transition: height 0.08s linear;
+}
+
+.marker {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  left: 50%;
+  width: 122%;
+  height: 5%;
+  min-height: 8px;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: var(--yellow);
+  box-shadow: 0 0 18px var(--yellow), 0 0 34px rgba(255, 242, 60, 0.62);
+  transition: top 0.08s linear;
+}
+
+.tower-wrap.pointless-hit .marker {
+  background: var(--green);
+  box-shadow: 0 0 24px var(--green), 0 0 54px rgba(34, 255, 134, 0.75);
+}
+
+.tower-wrap.hundred-hit .marker {
+  background: var(--red);
+  box-shadow: 0 0 24px var(--red), 0 0 54px rgba(255, 52, 77, 0.72);
+}

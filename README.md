@@ -16,9 +16,22 @@ No server or installation is required.
 
 - `home.html` - Start page.
 - `Pointless.html` - Main game page.
-- `style.css` - Game design and layout.
-- `script.js` - Game behavior, scoring, and turns.
+- `podium.html` - Winners' podium shown after the last question.
 - `questions.js` - Questions and answers. Edit this file to change the quiz.
+- `css/` - Stylesheets, split by area:
+  - `variables.css` - Colors, resets, page background.
+  - `game.css` - Overall shell and playfield layout.
+  - `tower.css` - Score tower and marker.
+  - `board.css` - Question board and round results.
+  - `cards.css` - Team answer cards.
+  - `host.css` - Host control bar.
+  - `effects.css` - Overlays, flashes, keyframes, responsive rules.
+  - `podium.css` - Winners' podium page.
+- `js/` - Scripts, split by responsibility:
+  - `config.js` - Shared constants (team count, timings, storage key).
+  - `audio.js` - Sound effects.
+  - `game.js` - Game flow, scoring, and turns.
+  - `podium.js` - Winners' podium reveal and confetti.
 
 ## Add Questions
 
@@ -43,7 +56,7 @@ Remember to place a comma between question objects.
 
 - `question` - Text displayed on the game board.
 - `prompt` - Small text shown above the question.
-- `startTeam` - Team that answers first (`1` to `4`).
+- `startTeam` - Team that answers first (`1` to `3`).
 - `answers` - Accepted answers and their scores.
 - `aliases` - Optional extra spellings that count as the same answer (e.g. `aliases: ["Antigua", "Barbuda"]`).
 
@@ -51,7 +64,7 @@ Answers are matched without considering capitalization or punctuation. A typed a
 
 ## Game Rules
 
-- Four teams play.
+- Three teams play.
 - Each team answers twice per question.
 - The first pass follows the configured starting-team order.
 - The second pass reverses that order, so the starting team answers last.
@@ -60,11 +73,19 @@ Answers are matched without considering capitalization or punctuation. A typed a
 - Incorrect answers add `100`.
 - Team totals continue into the next question.
 - After both passes, the highest answers and pointless/lowest answers are revealed.
+- After the final question, the game moves to the winners' podium.
+
+## Winners' Podium
+
+When the last question ends, **See Final Podium** opens `podium.html`. The teams are
+revealed one at a time, lowest place first, and the team with the **fewest** total
+points is crowned the winner (center, gold) with confetti. **Play Again** restarts a
+fresh game; **Home** returns to the start page.
 
 ## Example Turn Orders
 
-- `startTeam: 1` - `1, 2, 3, 4`, then `4, 3, 2, 1`
-- `startTeam: 2` - `2, 3, 4, 1`, then `1, 4, 3, 2`
+- `startTeam: 1` - `1, 2, 3`, then `3, 2, 1`
+- `startTeam: 2` - `2, 3, 1`, then `1, 3, 2`
 
 ## Reset Round
 

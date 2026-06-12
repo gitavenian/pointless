@@ -1,0 +1,45 @@
+/* Color palette, global resets, and base page background. */
+:root {
+  --yellow: #fff23c;
+  --navy: #12124f;
+  --pink: #f13d91;
+  --green: #22ff86;
+  --red: #ff2948;
+  --gold: #ffd34e;
+  --silver: #d7e2f0;
+  --bronze: #f0a763;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Arial Black", Arial, Helvetica, sans-serif;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: #fff;
+  background:
+    radial-gradient(circle at 52% 30%, #ffb2d9 0 12%, transparent 33%),
+    linear-gradient(135deg, #f13d91 0%, #8d32bb 45%, #251263 100%);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button:disabled,
+input:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}

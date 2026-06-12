@@ -1,0 +1,281 @@
+/* Winner podium page: stage, blocks, plaques, confetti, and reveal animations. */
+.podium-body {
+  min-height: 100vh;
+  padding: clamp(14px, 3vh, 34px) clamp(16px, 3vw, 40px);
+  /* Override the shared body centering: align to the top and allow scrolling
+     so the action buttons are never clipped on shorter screens. */
+  place-items: start center;
+  align-content: start;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.podium-shell {
+  position: relative;
+  width: min(96vw, 1100px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(14px, 2.4vh, 30px);
+}
+
+.podium-title {
+  text-align: center;
+  font-size: clamp(2rem, 6vw, 4.4rem);
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+  text-shadow: 0 6px 0 #0a0b35, 0 0 34px rgba(255, 242, 60, 0.35);
+  animation: titleDrop 0.8s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+}
+
+/* The three (or more) podium columns, arranged with the winner centered. */
+.podium-stage {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: clamp(10px, 2.4vw, 32px);
+}
+
+.podium-col {
+  flex: 0 1 clamp(120px, 22vw, 240px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.podium-plaque {
+  width: 100%;
+  margin-bottom: 14px;
+  padding: clamp(10px, 1.6vw, 18px) 10px;
+  border: 3px solid rgba(255, 255, 255, 0.85);
+  border-radius: 18px;
+  background: linear-gradient(165deg, rgba(28, 31, 104, 0.96), rgba(69, 30, 123, 0.94));
+  text-align: center;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  transform: translateY(26px) scale(0.85);
+}
+
+.podium-col.revealed .podium-plaque {
+  animation: plaquePop 0.6s cubic-bezier(0.2, 1.4, 0.4, 1) forwards;
+}
+
+.podium-medal {
+  font-size: clamp(1.8rem, 4.5vw, 3.2rem);
+  line-height: 1;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4));
+}
+
+.podium-team {
+  margin-top: 0.25em;
+  font-size: clamp(0.85rem, 1.9vw, 1.4rem);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  text-shadow: 0 3px 0 #000;
+}
+
+.podium-points {
+  margin-top: 0.3em;
+  display: inline-block;
+  padding: 0.1em 0.7em;
+  border: 2px solid rgba(255, 255, 255, 0.78);
+  border-radius: 999px;
+  background: #27186e;
+  color: var(--yellow);
+  font-size: clamp(0.9rem, 2.1vw, 1.6rem);
+  text-shadow: 0 3px 0 #000;
+}
+
+.podium-points small {
+  font-size: 0.5em;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.08em;
+}
+
+/* The standing block. Height grows in via scaleY when revealed. */
+.podium-block {
+  position: relative;
+  width: 100%;
+  height: var(--block-height, 140px);
+  border-radius: 14px 14px 6px 6px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.04));
+  box-shadow: inset 0 0 26px rgba(255, 255, 255, 0.18), 0 18px 30px rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  transform-origin: bottom center;
+  transform: scaleY(0);
+  display: grid;
+  place-items: center;
+}
+
+.podium-col.revealed .podium-block {
+  animation: blockRise 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.podium-place-num {
+  font-size: clamp(2.4rem, 6vw, 5rem);
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: 0 5px 0 rgba(0, 0, 0, 0.45);
+  opacity: 0;
+}
+
+.podium-col.revealed .podium-place-num {
+  animation: fadeIn 0.5s ease 0.35s forwards;
+}
+
+/* Place-specific colors. */
+.podium-col[data-place="1"] .podium-block {
+  background: linear-gradient(180deg, #ffe9a3, #f6b73c 60%, #c6881a);
+  box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.5), 0 0 40px rgba(255, 211, 78, 0.55), 0 18px 30px rgba(0, 0, 0, 0.4);
+}
+
+.podium-col[data-place="1"] .podium-plaque {
+  border-color: var(--gold);
+  box-shadow: 0 0 34px rgba(255, 211, 78, 0.6), 0 16px 34px rgba(0, 0, 0, 0.4);
+}
+
+.podium-col[data-place="1"] .podium-place-num {
+  color: #5a3a04;
+  text-shadow: 0 4px 0 rgba(255, 255, 255, 0.4);
+}
+
+.podium-col[data-place="2"] .podium-block {
+  background: linear-gradient(180deg, #ffffff, #cdd9ea 60%, #8d9cb5);
+}
+
+.podium-col[data-place="2"] .podium-place-num {
+  color: #3c4658;
+  text-shadow: 0 4px 0 rgba(255, 255, 255, 0.4);
+}
+
+.podium-col[data-place="3"] .podium-block {
+  background: linear-gradient(180deg, #ffd9b0, #e6914d 60%, #ad5f25);
+}
+
+.podium-col[data-place="3"] .podium-place-num {
+  color: #5a2f0c;
+  text-shadow: 0 4px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* Winner crown glow that pulses once revealed. */
+.podium-col[data-place="1"].revealed .podium-medal {
+  animation: crownBounce 1.4s ease-in-out infinite;
+}
+
+/* Action buttons under the stage. */
+.podium-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(10px, 2vw, 20px);
+  opacity: 0;
+  animation: fadeIn 0.6s ease forwards;
+  animation-delay: 2.6s;
+}
+
+.podium-btn {
+  padding: 0.8em 1.9em;
+  border: 3px solid #fff;
+  border-radius: 999px;
+  font-size: clamp(0.85rem, 1.8vw, 1.15rem);
+  font-weight: 900;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.18s ease, filter 0.18s ease, box-shadow 0.18s ease;
+}
+
+.podium-btn.primary {
+  color: var(--navy);
+  background: var(--yellow);
+  box-shadow: 0 8px 0 #c6a900, 0 17px 30px rgba(0, 0, 0, 0.32);
+}
+
+.podium-btn.ghost {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.3);
+}
+
+.podium-btn:hover {
+  transform: translateY(-4px);
+  filter: brightness(1.07);
+}
+
+.podium-btn:active {
+  transform: translateY(3px);
+}
+
+/* Empty-state when the page is opened without finishing a game. */
+.podium-empty {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4em;
+}
+
+.podium-empty p {
+  max-width: 460px;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+/* Confetti pieces injected by JS. */
+.confetti {
+  position: fixed;
+  top: -12px;
+  width: 10px;
+  height: 16px;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 5;
+  animation: confettiFall linear forwards;
+}
+
+@keyframes titleDrop {
+  from { opacity: 0; transform: translateY(-40px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes plaquePop {
+  0% { opacity: 0; transform: translateY(26px) scale(0.85); }
+  70% { opacity: 1; transform: translateY(-6px) scale(1.05); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes blockRise {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes crownBounce {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-8px) rotate(4deg); }
+}
+
+@keyframes confettiFall {
+  0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(105vh) rotate(720deg); opacity: 0.9; }
+}
+
+@media (max-width: 560px) {
+  .podium-stage {
+    min-height: 320px;
+  }
+
+  .podium-team {
+    font-size: 0.9rem;
+  }
+}
