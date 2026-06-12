@@ -8,8 +8,12 @@ let questionIndex = 0;
 let turnIndex = 0;
 let turnOrder = [];
 let teamResults = [];
+// Raw answer points for the CURRENT question only — reset every question.
 let teamTotals = Array(TEAM_COUNT).fill(0);
-let questionStartTotals = [...teamTotals];
+// Hidden placement points per question: questionPlacements[i] = [p0, p1, p2],
+// where the team with the fewest raw points that question scores 1, then 2, then 3.
+// These are never shown during play; the lowest total wins at the end.
+let questionPlacements = [];
 let busy = false;
 let revealTimer = null;
 
@@ -83,17 +87,15 @@ function buildTurnOrder(startingTeam) {
   return [...firstPass, ...[...firstPass].reverse()];
 }
 
-function startQuestion(index, preserveScores = true) {
+function startQuestion(index) {
   window.clearTimeout(revealTimer);
   questionIndex = index;
   turnIndex = 0;
   teamResults = [];
   busy = false;
 
-  if (!preserveScores) {
-    teamTotals = Array(TEAM_COUNT).fill(0);
-  }
-  questionStartTotals = [...teamTotals];
+  // Every question is played fresh; only the hidden placement points carry over.
+  teamTotals = Array(TEAM_COUNT).fill(0);
   turnOrder = buildTurnOrder(getStartingTeam(currentQuestion()));
 
   createTeamCards();
@@ -123,6 +125,27 @@ function currentPass() {
 
 function isLastQuestion() {
   return questionIndex === questions.length - 1;
+}
+
+// Rank this question's teams by raw points (fewest = best). The team with the
+// fewest points scores 1, the next 2, the most 3. Ties share the better place
+// (e.g. two teams tied for fewest both score 1, the third scores 3).
+function computeQuestionPlacement() {
+  return teamTotals.map(points =>
+    1 + teamTotals.filter(other => other < points).length
+  );
+}
+
+// Sum the hidden placement points across every completed question.
+function totalPlacementPoints() {
+  const totals = Array(TEAM_COUNT).fill(0);
+  questionPlacements.forEach(placements => {
+    if (!placements) return;
+    placements.forEach((points, index) => {
+      totals[index] += points;
+    });
+  });
+  return totals;
 }
 
 function prepareTeamTurn() {
@@ -283,6 +306,9 @@ function showRoundResults() {
   nextQuestionBtn.hidden = false;
   nextQuestionBtn.textContent = isLastQuestion() ? "See Final Podium" : "Next Question";
 
+  // Lock in (or recompute, after a reset) this question's hidden placement points.
+  questionPlacements[questionIndex] = computeQuestionPlacement();
+
   const sortedHigh = [...currentQuestion().answers]
     .sort((a, b) => Number(b.score) - Number(a.score))
     .slice(0, 3);
@@ -314,12 +340,14 @@ function nextQuestion() {
     finishGame();
     return;
   }
-  startQuestion(questionIndex + 1, true);
+  startQuestion(questionIndex + 1);
 }
 
-// Save the final totals and hand off to the winner podium page.
+// Save the final placement totals and hand off to the winner podium page.
+// The lowest total wins, so the podium ranks these ascending.
 function finishGame() {
-  const teams = teamTotals.map((total, index) => ({
+  const totals = totalPlacementPoints();
+  const teams = totals.map((total, index) => ({
     name: `TEAM ${index + 1}`,
     score: total
   }));
@@ -336,8 +364,9 @@ function finishGame() {
 
 function resetRound() {
   if (questions.length === 0) return;
-  teamTotals = [...questionStartTotals];
-  startQuestion(questionIndex, true);
+  // Drop this question's placement so it is recomputed cleanly on replay.
+  delete questionPlacements[questionIndex];
+  startQuestion(questionIndex);
 }
 
 function getCards() {
@@ -364,7 +393,7 @@ function toggleSound() {
 }
 
 if (questions.length > 0) {
-  startQuestion(0, false);
+  startQuestion(0);
 } else {
   questionKicker.textContent = "QUESTION DATA ERROR";
   questionText.textContent = "CHECK QUESTIONS.JS";

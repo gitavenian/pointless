@@ -71,16 +71,26 @@ Answers are matched without considering capitalization or punctuation. A typed a
 - Correct answers add their listed score.
 - Pointless answers add `0`.
 - Incorrect answers add `100`.
-- Team totals continue into the next question.
 - After both passes, the highest answers and pointless/lowest answers are revealed.
-- After the final question, the game moves to the winners' podium.
+
+### Scoring
+
+- Each question is scored on its own. Raw answer points are shown on the board but
+  **reset every question** — they do not carry over.
+- When a question ends, the teams are ranked by that question's raw points:
+  the team with the **fewest** points earns **1** placement point, the next **2**,
+  and the team with the most **3**. (Ties share the better place — e.g. two teams
+  tied for fewest both earn `1`, the third earns `3`.)
+- Placement points are **hidden during play** and quietly stored.
+- After the final question, the placement points are totalled and the team with the
+  **lowest total** wins.
 
 ## Winners' Podium
 
 When the last question ends, **See Final Podium** opens `podium.html`. The teams are
 revealed one at a time, lowest place first, and the team with the **fewest** total
-points is crowned the winner (center, gold) with confetti. **Play Again** restarts a
-fresh game; **Home** returns to the start page.
+placement points is crowned the winner (center, gold) with confetti. **Play Again**
+restarts a fresh game; **Home** returns to the start page.
 
 ## Example Turn Orders
 
@@ -89,4 +99,4 @@ fresh game; **Home** returns to the start page.
 
 ## Reset Round
 
-**Reset Round** restarts the current question and removes only points earned during that question. Scores from previous questions remain.
+**Reset Round** restarts the current question from scratch and discards that question's placement result so it is recomputed when the round is replayed. Placement points from earlier questions are kept.
