@@ -1,0 +1,103 @@
+/* Host adjudication overlay: accept an unlisted answer (with a score) or reject it. */
+.adjudication {
+  position: absolute;
+  z-index: 30;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 4%;
+  background: rgba(8, 10, 40, 0.62);
+  backdrop-filter: blur(2px);
+  animation: adjFade 0.18s ease both;
+}
+
+.adjudication[hidden] {
+  display: none;
+}
+
+.adjudication-card {
+  width: min(86%, 540px);
+  padding: clamp(18px, 3vw, 34px);
+  border: 3px solid rgba(255, 255, 255, 0.82);
+  border-radius: 22px;
+  background: linear-gradient(160deg, #1c1f68, #45207b);
+  text-align: center;
+  box-shadow: 0 26px 60px rgba(0, 0, 0, 0.5), inset 0 0 24px rgba(255, 255, 255, 0.1);
+}
+
+.adjudication-q {
+  color: var(--yellow);
+  font-size: clamp(0.66rem, 1.4vw, 1rem);
+  letter-spacing: 0.12em;
+}
+
+.adjudication-answer {
+  margin: 0.35em 0 0.5em;
+  font-size: clamp(1.3rem, 3.6vw, 2.5rem);
+  line-height: 1.05;
+  text-transform: uppercase;
+  text-shadow: 0 4px 0 #000;
+  overflow-wrap: anywhere;
+}
+
+.adjudication-hint {
+  margin-bottom: 1.1em;
+  color: rgba(255, 255, 255, 0.82);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(0.72rem, 1.3vw, 0.95rem);
+  font-weight: 700;
+}
+
+.adjudication-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(8px, 1.6vw, 16px);
+}
+
+.adjudication-row label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  color: #fff;
+  font-size: clamp(0.72rem, 1.3vw, 0.95rem);
+}
+
+.adjudication-row input {
+  width: 4.2em;
+  padding: 0.4em 0.5em;
+  border: 0;
+  border-radius: 10px;
+  color: #151515;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 900;
+  text-align: center;
+}
+
+.adjudication-row button {
+  padding: 0.6em 1.5em;
+  border: 2px solid rgba(255, 255, 255, 0.82);
+  border-radius: 999px;
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+#acceptBtn {
+  background: linear-gradient(180deg, #2fbf6a, #159b52);
+}
+
+#rejectBtn {
+  background: linear-gradient(180deg, #ff5168, #c41d35);
+}
+
+.adjudication-row button:hover {
+  filter: brightness(1.1);
+}
+
+@keyframes adjFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

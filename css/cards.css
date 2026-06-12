@@ -50,9 +50,13 @@
 }
 
 .answer-slot {
+  max-width: 100%;
+  overflow: hidden;
   color: rgba(255, 255, 255, 0.72);
   font-size: clamp(0.52rem, 0.7vw, 0.7rem);
   letter-spacing: 0.08em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .answer-name {

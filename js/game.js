@@ -4,6 +4,10 @@
 const questions = Array.isArray(window.GAME_QUESTIONS)
   ? window.GAME_QUESTIONS
   : [];
+
+// Custom team names from the home page, falling back to TEAM 1/2/3.
+const teamNames = loadTeamNames();
+
 let questionIndex = 0;
 let turnIndex = 0;
 let turnOrder = [];
@@ -14,6 +18,10 @@ let teamTotals = Array(TEAM_COUNT).fill(0);
 // where the team with the fewest raw points that question scores 1, then 2, then 3.
 // These are never shown during play; the lowest total wins at the end.
 let questionPlacements = [];
+// Normalized answers already given this question (any team) — used to block repeats.
+let usedAnswers = new Set();
+// While the host is adjudicating an unlisted answer, this holds its details.
+let pendingAdjudication = null;
 let busy = false;
 let revealTimer = null;
 
@@ -37,6 +45,11 @@ const lowestAnswers = document.getElementById("lowestAnswers");
 const lowestHeading = document.getElementById("lowestHeading");
 const feedbackOverlay = document.getElementById("feedbackOverlay");
 const nextQuestionBtn = document.getElementById("nextQuestionBtn");
+const adjudication = document.getElementById("adjudication");
+const adjudicationAnswer = document.getElementById("adjudicationAnswer");
+const adjudicationScore = document.getElementById("adjudicationScore");
+const acceptBtn = document.getElementById("acceptBtn");
+const rejectBtn = document.getElementById("rejectBtn");
 
 showBtn.addEventListener("click", submitAnswer);
 resetBtn.addEventListener("click", resetRound);
@@ -45,6 +58,29 @@ soundBtn.addEventListener("click", toggleSound);
 answerInput.addEventListener("keydown", event => {
   if (event.key === "Enter") submitAnswer();
 });
+acceptBtn.addEventListener("click", () => resolveAdjudication(true));
+rejectBtn.addEventListener("click", () => resolveAdjudication(false));
+adjudicationScore.addEventListener("keydown", event => {
+  if (event.key === "Enter") resolveAdjudication(true);
+});
+
+function loadTeamNames() {
+  let stored = [];
+  try {
+    const parsed = JSON.parse(localStorage.getItem(TEAM_NAMES_KEY));
+    if (Array.isArray(parsed)) stored = parsed;
+  } catch (error) {
+    stored = [];
+  }
+  return Array.from({ length: TEAM_COUNT }, (_, index) => {
+    const name = stored[index] && String(stored[index]).trim();
+    return name ? name : `TEAM ${index + 1}`;
+  });
+}
+
+function teamName(index) {
+  return teamNames[index] || `TEAM ${index + 1}`;
+}
 
 function normalize(text) {
   return text
@@ -62,7 +98,7 @@ function createTeamCards() {
     const card = document.createElement("article");
     card.className = "answer-card";
     card.innerHTML = `
-      <div class="answer-slot">TEAM ${index + 1}</div>
+      <div class="answer-slot">${teamName(index)}</div>
       <div class="answer-name">-</div>
       <div class="answer-score">${teamTotals[index]}</div>
       <div class="answer-result-icon" aria-hidden="true"></div>
@@ -92,7 +128,10 @@ function startQuestion(index) {
   questionIndex = index;
   turnIndex = 0;
   teamResults = [];
+  usedAnswers = new Set();
+  pendingAdjudication = null;
   busy = false;
+  closeAdjudication();
 
   // Every question is played fresh; only the hidden placement points carry over.
   teamTotals = Array(TEAM_COUNT).fill(0);
@@ -108,6 +147,7 @@ function startQuestion(index) {
   scoreDisplay.textContent = "100";
   setTowerPosition(100);
   resetBtn.disabled = false;
+  saveState("playing");
   prepareTeamTurn();
 }
 
@@ -156,9 +196,14 @@ function prepareTeamTurn() {
   answerInput.disabled = false;
   showBtn.disabled = false;
   answerInput.value = "";
-  answerInput.placeholder = `Type Team ${teamIndex + 1}'s answer`;
-  turnLabel.textContent = `TEAM ${teamIndex + 1}`;
+  answerInput.placeholder = `Type ${teamName(teamIndex)}'s answer`;
+  turnLabel.textContent = teamName(teamIndex);
   answerInput.focus();
+}
+
+function flashInput() {
+  answerInput.classList.add("input-error");
+  window.setTimeout(() => answerInput.classList.remove("input-error"), 600);
 }
 
 function submitAnswer() {
@@ -167,8 +212,15 @@ function submitAnswer() {
   const rawAnswer = answerInput.value.trim();
   const teamIndex = currentTeamIndex();
   if (!rawAnswer) {
-    answerInput.classList.add("input-error");
-    window.setTimeout(() => answerInput.classList.remove("input-error"), 500);
+    flashInput();
+    answerInput.focus();
+    return;
+  }
+
+  // Block answers already given by any team this question.
+  if (usedAnswers.has(normalize(rawAnswer))) {
+    flashInput();
+    showOverlay("ALREADY GIVEN", "notice");
     answerInput.focus();
     return;
   }
@@ -193,27 +245,70 @@ function submitAnswer() {
   );
 }
 
-function revealAnswer(rawAnswer, card, teamIndex) {
-  const match = currentQuestion().answers.find(item => {
+function findMatch(rawAnswer) {
+  return currentQuestion().answers.find(item => {
     const candidates = [item.answer, ...(Array.isArray(item.aliases) ? item.aliases : [])];
     return candidates.some(candidate => normalize(candidate) === normalize(rawAnswer));
   });
+}
+
+function revealAnswer(rawAnswer, card, teamIndex) {
+  const match = findMatch(rawAnswer);
+  if (match) {
+    applyResult(rawAnswer, card, teamIndex, Number(match.score), true);
+  } else {
+    // Not on the board — let the host accept it (with a score) or reject it.
+    openAdjudication(rawAnswer, card, teamIndex);
+  }
+}
+
+function openAdjudication(rawAnswer, card, teamIndex) {
+  pendingAdjudication = { rawAnswer, card, teamIndex };
+  adjudicationAnswer.textContent = rawAnswer;
+  adjudicationScore.value = "0";
+  adjudication.hidden = false;
+  playTone(300, 0.12, "triangle", 0.05);
+  window.setTimeout(() => adjudicationScore.focus(), 30);
+}
+
+function closeAdjudication() {
+  if (adjudication) adjudication.hidden = true;
+}
+
+function resolveAdjudication(accept) {
+  if (!pendingAdjudication) return;
+  const { rawAnswer, card, teamIndex } = pendingAdjudication;
+  pendingAdjudication = null;
+  closeAdjudication();
+
+  if (accept) {
+    let score = Math.round(Number(adjudicationScore.value));
+    if (!Number.isFinite(score)) score = 0;
+    score = Math.max(0, Math.min(100, score));
+    applyResult(rawAnswer, card, teamIndex, score, true);
+  } else {
+    applyResult(rawAnswer, card, teamIndex, 100, false);
+  }
+}
+
+function applyResult(rawAnswer, card, teamIndex, score, correct) {
+  usedAnswers.add(normalize(rawAnswer));
   const result = {
     team: teamIndex + 1,
     pass: currentPass(),
     answer: rawAnswer,
-    score: match ? Number(match.score) : 100,
-    correct: Boolean(match)
+    score,
+    correct
   };
 
   teamResults.push(result);
-  animateScore(result.score, score => {
-    teamTotals[teamIndex] += score;
+  animateScore(score, finalScore => {
+    teamTotals[teamIndex] += finalScore;
     updateTeamCard(card, result, teamIndex);
 
-    if (!result.correct) {
+    if (!correct) {
       showIncorrect(card);
-    } else if (score === 0) {
+    } else if (finalScore === 0) {
       showPointless(card);
     } else {
       playTone(520, 0.12, "sine", 0.05);
@@ -226,6 +321,23 @@ function updateTeamCard(card, result, teamIndex) {
   card.classList.remove("locked");
   card.classList.add(result.correct ? "answered" : "incorrect");
   card.querySelector(".answer-score").textContent = teamTotals[teamIndex];
+}
+
+// Re-draw a finished answer on its card without animation (used when resuming).
+function renderResultOnCard(card, result) {
+  card.classList.remove("locked", "active", "answered", "incorrect", "pointless");
+  card.classList.add(result.correct ? "answered" : "incorrect");
+  card.querySelector(".answer-name").textContent = result.answer;
+  card.querySelector(".answer-score").textContent = teamTotals[result.team - 1];
+  const icon = card.querySelector(".answer-result-icon");
+  if (!result.correct) {
+    icon.textContent = "X";
+  } else if (Number(result.score) === 0) {
+    card.classList.add("pointless");
+    icon.textContent = "POINTLESS";
+  } else {
+    icon.textContent = "";
+  }
 }
 
 function animateScore(target, onComplete) {
@@ -281,6 +393,7 @@ function continueGame() {
   busy = false;
 
   if (turnIndex < turnOrder.length) {
+    saveState("playing");
     prepareTeamTurn();
   } else {
     showRoundResults();
@@ -308,6 +421,7 @@ function showRoundResults() {
 
   // Lock in (or recompute, after a reset) this question's hidden placement points.
   questionPlacements[questionIndex] = computeQuestionPlacement();
+  saveState("results");
 
   const sortedHigh = [...currentQuestion().answers]
     .sort((a, b) => Number(b.score) - Number(a.score))
@@ -346,9 +460,10 @@ function nextQuestion() {
 // Save the final placement totals and hand off to the winner podium page.
 // The lowest total wins, so the podium ranks these ascending.
 function finishGame() {
+  clearGameState();
   const totals = totalPlacementPoints();
   const teams = totals.map((total, index) => ({
-    name: `TEAM ${index + 1}`,
+    name: teamName(index),
     score: total
   }));
   try {
@@ -392,8 +507,95 @@ function toggleSound() {
   soundBtn.textContent = soundEnabled ? "Sound: On" : "Sound: Off";
 }
 
+// --- Refresh-safe persistence -------------------------------------------------
+
+function saveState(phase) {
+  const state = {
+    v: 1,
+    questionCount: questions.length,
+    questionIndex,
+    turnIndex,
+    teamTotals,
+    teamResults,
+    questionPlacements,
+    usedAnswers: [...usedAnswers],
+    phase
+  };
+  try {
+    localStorage.setItem(GAME_STATE_KEY, JSON.stringify(state));
+  } catch (error) {
+    // Persistence is best-effort; ignore when storage is unavailable.
+  }
+}
+
+function clearGameState() {
+  try {
+    localStorage.removeItem(GAME_STATE_KEY);
+  } catch (error) {
+    // Nothing to clear when storage is unavailable.
+  }
+}
+
+function loadState() {
+  let state = null;
+  try {
+    state = JSON.parse(localStorage.getItem(GAME_STATE_KEY));
+  } catch (error) {
+    return null;
+  }
+  if (!state || state.v !== 1 || state.questionCount !== questions.length) return null;
+  if (!Number.isInteger(state.questionIndex)) return null;
+  if (state.questionIndex < 0 || state.questionIndex >= questions.length) return null;
+  return state;
+}
+
+// Rebuild the board statically from saved state after a page reload.
+function restoreState(state) {
+  questionIndex = state.questionIndex;
+  turnIndex = Number.isInteger(state.turnIndex) ? state.turnIndex : 0;
+  teamTotals = Array.isArray(state.teamTotals) && state.teamTotals.length === TEAM_COUNT
+    ? state.teamTotals.slice()
+    : Array(TEAM_COUNT).fill(0);
+  teamResults = Array.isArray(state.teamResults) ? state.teamResults : [];
+  questionPlacements = Array.isArray(state.questionPlacements) ? state.questionPlacements : [];
+  usedAnswers = new Set(Array.isArray(state.usedAnswers) ? state.usedAnswers : []);
+  pendingAdjudication = null;
+  busy = false;
+  turnOrder = buildTurnOrder(getStartingTeam(currentQuestion()));
+
+  createTeamCards();
+  clearBoardEffects();
+  closeAdjudication();
+  questionContent.hidden = false;
+  roundResults.hidden = true;
+  nextQuestionBtn.hidden = true;
+  questionKicker.textContent = currentQuestion().prompt || "WE ASKED 100 PEOPLE";
+  questionText.textContent = currentQuestion().question;
+  scoreDisplay.textContent = "100";
+  setTowerPosition(100);
+  resetBtn.disabled = false;
+
+  teamResults.forEach(result => {
+    const card = getCards()[result.team - 1];
+    if (card) renderResultOnCard(card, result);
+  });
+
+  if (state.phase === "results" || turnIndex >= turnOrder.length) {
+    showRoundResults();
+  } else {
+    prepareTeamTurn();
+  }
+}
+
+// --- Boot ---------------------------------------------------------------------
+
 if (questions.length > 0) {
-  startQuestion(0);
+  const saved = loadState();
+  if (saved) {
+    restoreState(saved);
+  } else {
+    startQuestion(0);
+  }
 } else {
   questionKicker.textContent = "QUESTION DATA ERROR";
   questionText.textContent = "CHECK QUESTIONS.JS";

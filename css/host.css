@@ -24,8 +24,13 @@
 .turn-label {
   display: grid;
   place-items: center;
+  padding-inline: 0.4em;
+  overflow: hidden;
   color: var(--yellow);
   letter-spacing: 0.04em;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .host-panel input {

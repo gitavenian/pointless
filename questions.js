@@ -1,4 +1,3 @@
-// Edit only this file to add or change questions.
 window.GAME_QUESTIONS = [
   {
     question: "Countries That Start And End With A",

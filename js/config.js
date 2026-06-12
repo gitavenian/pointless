@@ -4,3 +4,9 @@ const REVEAL_DELAY = 1000;
 
 // localStorage key used to hand final scores from the game to the podium page.
 const FINAL_SCORES_KEY = "pointlessFinalScores";
+
+// localStorage key holding the custom team names entered on the home page.
+const TEAM_NAMES_KEY = "pointlessTeamNames";
+
+// localStorage key holding in-progress game state so a refresh can resume.
+const GAME_STATE_KEY = "pointlessGameState";

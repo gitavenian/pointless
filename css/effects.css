@@ -31,6 +31,13 @@
   text-shadow: 0 0 20px var(--green), 0 0 70px var(--green), 0 7px 0 #006c32;
 }
 
+.feedback-overlay.notice {
+  color: #fff;
+  background: radial-gradient(circle, rgba(255, 176, 52, 0.5), rgba(120, 60, 0, 0.12) 66%, transparent 80%);
+  font-size: clamp(2rem, 8vw, 6.5rem);
+  text-shadow: 0 0 18px #ffb347, 0 6px 0 #7a4d00;
+}
+
 .incorrect-flash {
   animation: redScreen 0.22s ease-in-out 5 alternate;
 }
