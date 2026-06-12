@@ -20,8 +20,6 @@ let teamTotals = Array(TEAM_COUNT).fill(0);
 let questionPlacements = [];
 // Normalized answers already given this question (any team) — used to block repeats.
 let usedAnswers = new Set();
-// While the host is adjudicating an unlisted answer, this holds its details.
-let pendingAdjudication = null;
 let busy = false;
 let revealTimer = null;
 
@@ -45,11 +43,6 @@ const lowestAnswers = document.getElementById("lowestAnswers");
 const lowestHeading = document.getElementById("lowestHeading");
 const feedbackOverlay = document.getElementById("feedbackOverlay");
 const nextQuestionBtn = document.getElementById("nextQuestionBtn");
-const adjudication = document.getElementById("adjudication");
-const adjudicationAnswer = document.getElementById("adjudicationAnswer");
-const adjudicationScore = document.getElementById("adjudicationScore");
-const acceptBtn = document.getElementById("acceptBtn");
-const rejectBtn = document.getElementById("rejectBtn");
 
 showBtn.addEventListener("click", submitAnswer);
 resetBtn.addEventListener("click", resetRound);
@@ -57,11 +50,6 @@ nextQuestionBtn.addEventListener("click", nextQuestion);
 soundBtn.addEventListener("click", toggleSound);
 answerInput.addEventListener("keydown", event => {
   if (event.key === "Enter") submitAnswer();
-});
-acceptBtn.addEventListener("click", () => resolveAdjudication(true));
-rejectBtn.addEventListener("click", () => resolveAdjudication(false));
-adjudicationScore.addEventListener("keydown", event => {
-  if (event.key === "Enter") resolveAdjudication(true);
 });
 
 function loadTeamNames() {
@@ -129,9 +117,7 @@ function startQuestion(index) {
   turnIndex = 0;
   teamResults = [];
   usedAnswers = new Set();
-  pendingAdjudication = null;
   busy = false;
-  closeAdjudication();
 
   // Every question is played fresh; only the hidden placement points carry over.
   teamTotals = Array(TEAM_COUNT).fill(0);
