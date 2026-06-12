@@ -169,9 +169,10 @@ function submitAnswer() {
 }
 
 function revealAnswer(rawAnswer, card, teamIndex) {
-  const match = currentQuestion().answers.find(
-    item => normalize(item.answer) === normalize(rawAnswer)
-  );
+  const match = currentQuestion().answers.find(item => {
+    const candidates = [item.answer, ...(Array.isArray(item.aliases) ? item.aliases : [])];
+    return candidates.some(candidate => normalize(candidate) === normalize(rawAnswer));
+  });
   const result = {
     team: teamIndex + 1,
     pass: currentPass(),

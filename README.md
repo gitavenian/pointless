@@ -31,7 +31,7 @@ Edit `questions.js` and add another object inside `window.GAME_QUESTIONS`:
   startTeam: 3,
   answers: [
     { answer: "Rare answer", score: 0 },
-    { answer: "Another answer", score: 4 },
+    { answer: "Another answer", score: 4, aliases: ["Alt spelling", "Short name"] },
     { answer: "Common answer", score: 65 }
   ]
 }
@@ -45,8 +45,9 @@ Remember to place a comma between question objects.
 - `prompt` - Small text shown above the question.
 - `startTeam` - Team that answers first (`1` to `4`).
 - `answers` - Accepted answers and their scores.
+- `aliases` - Optional extra spellings that count as the same answer (e.g. `aliases: ["Antigua", "Barbuda"]`).
 
-Answers are matched without considering capitalization or punctuation.
+Answers are matched without considering capitalization or punctuation. A typed answer counts if it matches the `answer` text or any entry in its `aliases` list.
 
 ## Game Rules
 
