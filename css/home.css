@@ -1,0 +1,191 @@
+/* Start page: title, team-name fields, and the Start button. */
+:root {
+  --navy: #121653;
+  --pink: #ee3d91;
+  --purple: #6d279d;
+  --yellow: #fff13c;
+  --green: #22ff86;
+  --white: #fff;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+}
+
+body {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 24px;
+  color: var(--white);
+  font-family: Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 186, 220, 0.48), transparent 27%),
+    linear-gradient(135deg, var(--pink), var(--purple) 55%, #281267);
+}
+
+.home-card {
+  position: relative;
+  width: min(92vw, 720px);
+  padding: clamp(34px, 6vw, 60px);
+  overflow: hidden;
+  border: 3px solid rgba(255, 255, 255, 0.82);
+  border-radius: 34px;
+  background: linear-gradient(150deg, rgba(28, 31, 104, 0.98), rgba(69, 30, 123, 0.96));
+  box-shadow: 0 30px 80px rgba(20, 7, 61, 0.5), inset 0 0 28px rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.home-card::before {
+  content: "";
+  position: absolute;
+  top: -18%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(60%, 420px);
+  aspect-ratio: 1;
+  border: clamp(13px, 2vw, 20px) solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(18px, 3vw, 26px);
+}
+
+h1 {
+  color: var(--white);
+  font-family: "Arial Black", Arial, Helvetica, sans-serif;
+  font-size: clamp(3rem, 8vw, 5.6rem);
+  line-height: 0.9;
+  letter-spacing: -0.055em;
+  text-shadow: 0 7px 0 #080a31;
+}
+
+.tagline {
+  max-width: 440px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.team-fields {
+  display: grid;
+  gap: 12px;
+  width: min(86vw, 400px);
+  text-align: left;
+}
+
+.fields-kicker {
+  margin-bottom: 2px;
+  color: var(--yellow);
+  font-family: "Arial Black", Arial, Helvetica, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.22em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.team-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.07);
+  transition: background 0.16s ease;
+}
+
+.team-row:focus-within {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.team-num {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: var(--navy);
+  font-family: "Arial Black", Arial, Helvetica, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+
+.team-row:nth-child(1) .team-num { background: var(--pink); }
+.team-row:nth-child(2) .team-num { background: var(--yellow); }
+.team-row:nth-child(3) .team-num { background: var(--green); }
+
+.team-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.65em 0.9em;
+  border: 0;
+  border-radius: 11px;
+  outline: 0;
+  color: #151515;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.team-row input:focus {
+  box-shadow: 0 0 0 3px var(--yellow);
+}
+
+.start-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: min(86vw, 400px);
+  padding: 0.95em 1.7em;
+  border: 3px solid var(--white);
+  border-radius: 999px;
+  color: var(--navy);
+  background: var(--yellow);
+  font-family: "Arial Black", Arial, Helvetica, sans-serif;
+  font-size: clamp(1rem, 2.2vw, 1.25rem);
+  font-weight: 900;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 8px 0 #c6a900, 0 17px 30px rgba(0, 0, 0, 0.32);
+  transition: transform 0.18s ease, filter 0.18s ease, box-shadow 0.18s ease;
+}
+
+.start-button:hover {
+  transform: translateY(-4px);
+  filter: brightness(1.06);
+  box-shadow: 0 11px 0 #c6a900, 0 22px 36px rgba(0, 0, 0, 0.36);
+}
+
+.start-button:active {
+  transform: translateY(4px);
+  box-shadow: 0 3px 0 #c6a900, 0 9px 20px rgba(0, 0, 0, 0.28);
+}
+
+@media (max-height: 640px) {
+  .content {
+    gap: 14px;
+  }
+
+  h1 {
+    font-size: clamp(2.4rem, 7vw, 3.6rem);
+  }
+}

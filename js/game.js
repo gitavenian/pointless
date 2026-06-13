@@ -5,7 +5,7 @@ const questions = Array.isArray(window.GAME_QUESTIONS)
   ? window.GAME_QUESTIONS
   : [];
 
-// Custom team names from the home page, falling back to TEAM 1/2/3.
+// Custom team names entered on the home page, falling back to TEAM 1/2/3.
 const teamNames = loadTeamNames();
 
 let questionIndex = 0;

@@ -6,9 +6,10 @@ A local browser-based team quiz inspired by *Pointless*. Teams try to find corre
 
 1. Keep all project files in the same folder.
 2. Open `home.html` in a browser.
-3. Click **Start The Game**.
+3. Enter the three team names (or leave them blank for TEAM 1/2/3).
+4. Click **Start The Game**.
 
-You can also open `Pointless.html` directly.
+You can also open `Pointless.html` directly, which uses the last-entered names (or the defaults).
 
 No server or installation is required.
 
@@ -19,6 +20,7 @@ No server or installation is required.
 - `podium.html` - Winners' podium shown after the last question.
 - `questions.js` - Questions and answers. Edit this file to change the quiz.
 - `css/` - Stylesheets, split by area:
+  - `home.css` - Start page (title, team-name fields, Start button).
   - `variables.css` - Colors, resets, page background.
   - `game.css` - Overall shell and playfield layout.
   - `tower.css` - Score tower and marker.
@@ -29,6 +31,7 @@ No server or installation is required.
   - `podium.css` - Winners' podium page.
 - `js/` - Scripts, split by responsibility:
   - `config.js` - Shared constants (team count, timings, storage key).
+  - `home.js` - Saves team names on the start page and opens the game.
   - `audio.js` - Sound effects.
   - `game.js` - Game flow, scoring, and turns.
   - `podium.js` - Winners' podium reveal and confetti.
