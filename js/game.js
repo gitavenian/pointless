@@ -332,9 +332,11 @@ function animateScore(target, onComplete) {
     }
 
     const difference = current - target;
-    const decrement = difference > 45 ? 4 : difference > 20 ? 2 : 1;
+    // Smaller steps and longer pauses than before — the tower crawls for suspense,
+    // and slows further as it nears the final score.
+    const decrement = difference > 50 ? 3 : difference > 20 ? 2 : 1;
     current = Math.max(target, current - decrement);
-    window.setTimeout(step, difference < 8 ? 90 : difference < 25 ? 45 : 24);
+    window.setTimeout(step, difference < 6 ? 200 : difference < 20 ? 110 : 60);
   }
 
   step();
@@ -455,11 +457,40 @@ function finishGame() {
   window.location.href = "podium.html";
 }
 
+// Undo just the most recently submitted answer so the host can re-enter it,
+// without disturbing earlier teams or the earlier pass of this question.
 function resetRound() {
-  if (questions.length === 0) return;
-  // Drop this question's placement so it is recomputed cleanly on replay.
+  if (questions.length === 0 || busy) return;
+  window.clearTimeout(revealTimer);
+
+  // Step back over the last answer (if any) and refund its score.
+  if (teamResults.length > 0) {
+    const last = teamResults.pop();
+    const teamIdx = last.team - 1;
+    teamTotals[teamIdx] = Math.max(0, teamTotals[teamIdx] - (Number(last.score) || 0));
+    usedAnswers.delete(normalize(last.answer));
+  }
+  turnIndex = teamResults.length;
+
+  // This question's placement is now stale; it is recomputed when the round ends.
   delete questionPlacements[questionIndex];
-  startQuestion(questionIndex);
+
+  // Return to play (this also covers undoing from the results screen) and redraw
+  // the answers that remain on their team cards.
+  clearBoardEffects();
+  questionContent.hidden = false;
+  roundResults.hidden = true;
+  nextQuestionBtn.hidden = true;
+  createTeamCards();
+  teamResults.forEach(result => {
+    const card = getCards()[result.team - 1];
+    if (card) renderResultOnCard(card, result);
+  });
+  scoreDisplay.textContent = "100";
+  setTowerPosition(100);
+  resetBtn.disabled = false;
+  saveState("playing");
+  prepareTeamTurn();
 }
 
 function getCards() {

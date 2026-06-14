@@ -100,6 +100,6 @@ restarts a fresh game; **Home** returns to the start page.
 - `startTeam: 1` - `1, 2, 3`, then `3, 2, 1`
 - `startTeam: 2` - `2, 3, 1`, then `1, 3, 2`
 
-## Reset Round
+## Undo Answer
 
-**Reset Round** restarts the current question from scratch and discards that question's placement result so it is recomputed when the round is replayed. Placement points from earlier questions are kept.
+**Undo Answer** steps back over the most recent answer so the host can re-enter it after a mistake. It refunds that answer's score and returns to the team that gave it — earlier teams and the earlier pass of the same question are kept. It also works from the results screen, stepping back into play. Pressing it repeatedly walks back one answer at a time.
