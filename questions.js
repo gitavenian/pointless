@@ -103,7 +103,7 @@ window.GAME_QUESTIONS = [
     question: "Countries Shown In The Flags Picture",
     prompt: "Name one of the countries shown in the picture",
     startTeam: 2,
-    image: "flags-round.png",
+    image: "img/flags.jpg",
     answers: [
       { answer: "Gabon", score: 1 },
       { answer: "Suriname", score: 0 },

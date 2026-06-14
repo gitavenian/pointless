@@ -37,6 +37,7 @@ const turnLabel = document.getElementById("turnLabel");
 const questionContent = document.getElementById("questionContent");
 const questionKicker = document.getElementById("questionKicker");
 const questionText = document.getElementById("questionText");
+const questionImage = document.getElementById("questionImage");
 const roundResults = document.getElementById("roundResults");
 const highestAnswers = document.getElementById("highestAnswers");
 const lowestAnswers = document.getElementById("lowestAnswers");
@@ -128,13 +129,33 @@ function startQuestion(index) {
   questionContent.hidden = false;
   roundResults.hidden = true;
   nextQuestionBtn.hidden = true;
-  questionKicker.textContent = currentQuestion().prompt || "WE ASKED 100 PEOPLE";
-  questionText.textContent = currentQuestion().question;
+  renderQuestionMedia();
   scoreDisplay.textContent = "100";
   setTowerPosition(100);
   resetBtn.disabled = false;
   saveState("playing");
   prepareTeamTurn();
+}
+
+// Fill the question window: the prompt kicker plus either the title text or,
+// for picture rounds, the image in place of the title.
+function renderQuestionMedia() {
+  const question = currentQuestion();
+  questionKicker.textContent = question.prompt || "WE ASKED 100 PEOPLE";
+
+  if (question.image) {
+    questionImage.src = question.image;
+    questionImage.alt = question.question || "";
+    questionImage.hidden = false;
+    questionText.hidden = true;
+    questionContent.classList.add("has-image");
+  } else {
+    questionImage.hidden = true;
+    questionImage.removeAttribute("src");
+    questionText.textContent = question.question;
+    questionText.hidden = false;
+    questionContent.classList.remove("has-image");
+  }
 }
 
 function currentQuestion() {
@@ -524,8 +545,7 @@ function restoreState(state) {
   questionContent.hidden = false;
   roundResults.hidden = true;
   nextQuestionBtn.hidden = true;
-  questionKicker.textContent = currentQuestion().prompt || "WE ASKED 100 PEOPLE";
-  questionText.textContent = currentQuestion().question;
+  renderQuestionMedia();
   scoreDisplay.textContent = "100";
   setTowerPosition(100);
   resetBtn.disabled = false;

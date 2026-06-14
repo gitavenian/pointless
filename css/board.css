@@ -79,6 +79,25 @@ h1 {
   text-shadow: 0 4px 0 #000;
 }
 
+/* Picture questions: the kicker sits on top and the image fills the rest. */
+.question-content.has-image {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 0.7em;
+}
+
+.question-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 14px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.42);
+}
+
+.question-image[hidden] {
+  display: none;
+}
+
 .round-results {
   height: 100%;
   display: grid;
