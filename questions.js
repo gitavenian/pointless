@@ -199,8 +199,8 @@ window.GAME_QUESTIONS = [
     startTeam: 3,
     answers: [
       { answer: "Aragatsotn", score: 6, aliases: ["aragadzodn", "aragatzotn"] },
-      { answer: "Kotayk", score: 11, aliases: ["godayk", "kotayq"] },
-      { answer: "Armavir", score: 16 },
+      { answer: "Kotayk", score: 0, aliases: ["godayk", "kotayq"] },
+      { answer: "Armavir", score: 11 },
       { answer: "Gegharkunik", score: 22, aliases: ["kegharkunik", "gegharqunik", "kegharkounik"] },
       { answer: "Vayots Dzor", score: 28, aliases: ["vayots tsor", "vayotsdzor", "vayotstsor"] },
       { answer: "Shirak", score: 34, aliases: ["shirag"] },
